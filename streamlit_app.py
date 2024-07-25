@@ -32,11 +32,21 @@ def read_file(file):
         st.error(f"Error reading file: {e}")
         return None
 
-def exploratory_data_analysis(df):
-    st.write("Exploratory Data Analysis")
-    st.write(df.head())
-    st.write(df.info())
-    st.write(df.describe())
+def display_financial_statement(df):
+    st.write("Financial Statement")
+    st.write("******************")
+    st.write("**Income Statement**")
+    st.write(df.loc[:, ['Total Income', 'Operating Profit', 'Reported Net Profit']])
+    st.write(" ")
+    st.write("**Expenditure Statement**")
+    st.write(df.loc[:, ['Total Expenditure', 'Employee Cost', 'Depreciation']])
+    st.write(" ")
+    st.write("**Balance Sheet**")
+    st.write(df.loc[:, ['Total Assets', 'Total Liabilities', 'Total Equity']])
+    st.write(" ")
+    st.write("**Cash Flow Statement**")
+    st.write(df.loc[:, ['Net Cash from Operations', 'Net Cash from Investing', 'Net Cash from Financing']])
+
 
 def calculate_kpis(df):
     kpis = {}
