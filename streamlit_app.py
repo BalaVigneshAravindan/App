@@ -30,37 +30,41 @@ def display_financial_statement(df):
     
 def calculate_kpis(df):
     kpis = {}
-
-    # Extracting relevant rows based on known indices or conditions
-    total_income_row = df[df[0].str.contains("Total Income", na=False)]
-    operating_profit_row = df[df[0].str.contains("Operating Profit", na=False)]
-    total_expenditure_row = df[df[0].str.contains("Total Expenditure", na=False)]
-
-    if not total_income_row.empty and not operating_profit_row.empty and not total_expenditure_row.empty:
-        # Assuming the values are in columns from 1 onwards
-        total_income = total_income_row.iloc[0, 1:].astype(float).sum()
-        operating_profit = operating_profit_row.iloc[0, 1:].astype(float).sum()
-        total_expenditure = total_expenditure_row.iloc[0, 1:].astype(float).sum()
+    
+    try:
+       
+        total_income_row = df[df.iloc[:, 0].str.contains("Total Income", na=False)]
+        operating_profit_row = df[df.iloc[:, 0].str.contains("Operating Profit", na=False)]
+        total_expenditure_row = df[df.iloc[:, 0].str.contains("Total Expenditure", na=False)]
         
-        kpis['Total Income'] = total_income
-        kpis['Operating Profit'] = operating_profit
-        kpis['Operating Profit Margin'] = (operating_profit / total_income) * 100 if total_income != 0 else 0
-        
-        if 'Employee Cost' in df[0].values:
-            employee_cost_row = df[df[0].str.contains("Employee Cost", na=False)]
-            employee_cost = employee_cost_row.iloc[0, 1:].astype(float).sum()
-            kpis['Employee Cost Percentage'] = (employee_cost / total_expenditure) * 100
-        
-        if 'Dividend Per Share(Rs)' in df[0].values and 'Earnings Per Share-Unit Curr' in df[0].values:
-            dps_row = df[df[0].str.contains("Dividend Per Share(Rs)", na=False)]
-            eps_row = df[df[0].str.contains("Earnings Per Share-Unit Curr", na=False)]
-            dps = dps_row.iloc[0, 1:].astype(float).sum()
-            eps = eps_row.iloc[0, 1:].astype(float).sum()
-            kpis['Dividend Yield'] = (dps / eps) * 100 if eps != 0 else 0
-            kpis['Payout Ratio'] = (dps / eps) * 100 if eps != 0 else 0
-    else:
-        st.write("Error: Required rows not found in the data.")
-
+        if not total_income_row.empty and not operating_profit_row.empty and not total_expenditure_row.empty:
+          
+            total_income = total_income_row.iloc[0, 1:].astype(float).sum()
+            operating_profit = operating_profit_row.iloc[0, 1:].astype(float).sum()
+            total_expenditure = total_expenditure_row.iloc[0, 1:].astype(float).sum()
+            
+            kpis['Total Income'] = total_income
+            kpis['Operating Profit'] = operating_profit
+            kpis['Operating Profit Margin'] = (operating_profit / total_income) * 100 if total_income != 0 else 0
+            
+            if not df[df.iloc[:, 0].str.contains("Employee Cost", na=False)].empty:
+                employee_cost_row = df[df.iloc[:, 0].str.contains("Employee Cost", na=False)]
+                employee_cost = employee_cost_row.iloc[0, 1:].astype(float).sum()
+                kpis['Employee Cost Percentage'] = (employee_cost / total_expenditure) * 100
+            
+            if not df[df.iloc[:, 0].str.contains("Dividend Per Share(Rs)", na=False)].empty:
+                dps_row = df[df.iloc[:, 0].str.contains("Dividend Per Share(Rs)", na=False)]
+                eps_row = df[df.iloc[:, 0].str.contains("Earnings Per Share-Unit Curr", na=False)]
+                dps = dps_row.iloc[0, 1:].astype(float).sum()
+                eps = eps_row.iloc[0, 1:].astype(float).sum()
+                kpis['Dividend Yield'] = (dps / eps) * 100 if eps != 0 else 0
+                kpis['Payout Ratio'] = (dps / eps) * 100 if eps != 0 else 0
+        else:
+            st.write("Error: Required rows not found in the data.")
+    
+    except KeyError as e:
+        st.write(f"Error: Column not found - {str(e)}")
+    
     return kpis
 
 def create_visualizations(df):
