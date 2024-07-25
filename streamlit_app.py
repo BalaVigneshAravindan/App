@@ -55,7 +55,6 @@ def display_financial_statement(df):
             st.write(tab_contents[i])
             st.write(" ")
 
-
 def calculate_kpis(df):
     kpis = {}
     if 'Total Income' in df.columns and 'Operating Profit' in df.columns and 'Total Expenditure' in df.columns:
@@ -89,7 +88,7 @@ def main():
     if file is not None:
         df = read_file(file)
         if df is not None:
-            exploratory_data_analysis(df)
+            display_financial_statement(df)
             kpis = calculate_kpis(df)
             st.write("Key Performance Indicators (KPIs)")
             st.write(kpis)
