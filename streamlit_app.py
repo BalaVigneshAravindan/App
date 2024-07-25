@@ -102,6 +102,27 @@ def create_visualizations(df):
         # Display the plot in Streamlit
         st.pyplot(fig)
 
+def create_line_chart(df):
+    st.write("Line Chart")
+    fig, ax = plt.subplots()
+    years = df.iloc[:, 0]
+    employee_cost_percentages = [row[1]["Employee Cost Percentage"] for row in df.iterrows()]
+    operating_profits = [row[1]["Operating Profit"] for row in df.iterrows()]
+    operating_profit_margins = [row[1]["Operating Profit Margin"] for row in df.iterrows()]
+    total_incomes = [row[1]["Total Income"] for row in df.iterrows()]
+
+    ax.plot(years, employee_cost_percentages, label="Employee Cost Percentage")
+    ax.plot(years, operating_profits, label="Operating Profit")
+    ax.plot(years, operating_profit_margins, label="Operating Profit Margin")
+    ax.plot(years, total_incomes, label="Total Income")
+
+    ax.set_title("KPIs Over Time")
+    ax.set_xlabel("Year")
+    ax.set_ylabel("Value")
+    ax.legend()
+
+    st.pyplot(fig)
+    
 def main():
     st.title("Financial Statement Analyzer")
     file = st.file_uploader("Choose a file", type=["csv", "xlsx", "xls", "pdf"])
