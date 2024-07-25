@@ -47,9 +47,12 @@ def calculate_kpis(df):
 
 def create_visualizations(df):
     st.write("Visualizations")
-    fig, ax = plt.subplots()
-    sns.barplot(x='Category', y='Amount', data=df)
-    st.pyplot(fig)
+    if 'Category' in df.columns and 'Amount' in df.columns:
+        fig, ax = plt.subplots()
+        sns.barplot(x='Category', y='Amount', data=df)
+        st.pyplot(fig)
+    else:
+        st.write("Error: The DataFrame must contain 'Category' and 'Amount' columns for visualization.")
 
 def main():
     st.title("Financial Statement Analyzer")
