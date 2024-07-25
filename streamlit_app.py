@@ -6,23 +6,27 @@ import pdfplumber
 from openpyxl import load_workbook
 
 def read_file(file):
-    if file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+    file_type = file.type
+    
+    if file_type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
         # Read Excel file
-        df = pd.read_excel(file)
-        return df
-    elif file.type == "application/pdf":
+        return pd.read_excel(file)
+    elif file_type == "application/pdf":
         # Read PDF file
         text = ''
         with pdfplumber.open(file) as pdf:
             for page in pdf.pages:
                 text += page.extract_text()
-        return pd.DataFrame([text.splitlines()], columns=["Content"])  # Sample processing
-    elif file.type == "text/csv":
+        # Convert text to DataFrame; customize this according to your PDF structure
+        data = [line.split() for line in text.split('\n') if line.strip()]
+        return pd.DataFrame(data[1:], columns=data[0])
+    elif file_type == "text/csv":
         # Read CSV file
-        df = pd.read_csv(file)
-        return df
+        return pd.read_csv(file)
     else:
+        st.write("Unsupported file format.")
         return None
+
 
 def display_financial_statement(df):
     st.write("Financial Statement")
@@ -144,15 +148,15 @@ def main():
     file = st.file_uploader("Upload your file", type=["csv", "xlsx", "pdf"])
     
     if file is not None:
-        file_type = file.type.split('/')[-1]
-        df = read_file(file, file_type)
+        df = read_file(file)  # Pass only the file object
         if df is not None:
+            display_financial_statement(df)
             kpis = calculate_kpis(df)
-            kpis_df = pd.DataFrame([kpis], index=[df.columns[0]])  # Create DataFrame for KPIs
-            st.write("Key Performance Indicators (KPIs)")
-            st.write(kpis_df)
+            display_kpis(kpis)
             
             # Calculate and display overall performance
+            kpis_df = pd.DataFrame(kpis).T.reset_index()
+            kpis_df.rename(columns={'index': 'Year'}, inplace=True)
             result = evaluate_company_performance(kpis_df)
             st.write("Company Performance Evaluation:")
             st.write(result)
