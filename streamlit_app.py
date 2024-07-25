@@ -6,61 +6,27 @@ from pdfplumber import open as open_pdf
 from openpyxl import load_workbook
 
 def read_file(file):
-    try:
-        if file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-            # Read Excel file
-            wb = load_workbook(file)
-            sheet = wb.active
-            df = pd.DataFrame(sheet.values)
-            return df
-        elif file.type == "application/pdf":
-            # Read PDF file
-            with open_pdf(file) as pdf:
-                page = pdf.pages[0]
-                text = page.extract_text()
-                df = pd.DataFrame([x.split() for x in text.split('\n')])
-                return df
-        else:
-            try:
-                # Read CSV file
-                df = pd.read_csv(file)
-                return df
-            except pd.errors.ParserError as e:
-                st.error(f"Error reading file: {e}")
-                return None
-    except Exception as e:
-        st.error(f"Error reading file: {e}")
+    if file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+        # Read Excel file
+        wb = load_workbook(file)
+        sheet = wb.active
+        df = pd.DataFrame(sheet.values)
+        return df
+    elif file.type == "application/pdf":
+        # Read PDF file
+        with open_pdf(file) as pdf:
+            page = pdf.pages[0]
+            text = page.extract_text()
+            return text
+    else:
         return None
-
-def display_financial_statement(df):
-    st.write("Financial Statement")
-    st.write("******************")
-
-    # Create tabs for each financial statement
-    tabs = ["Income Statement", "Expenditure Statement", "Balance Sheet", "Cash Flow Statement"]
-    tab_contents = [
-        df.loc[:, ['Total Income', 'Operating Profit', 'Reported Net Profit']],
-        df.loc[:, ['Total Expenditure', 'Employee Cost', 'Depreciation']],
-        df.loc[:, ['Total Assets', 'Total Liabilities', 'Total Equity']],
-        df.loc[:, ['Net Cash from Operations', 'Net Cash from Investing', 'Net Cash from Financing']]
-    ]
-
-    # Create a tab container
-    tab_container = st.tabs(tabs)
-
-    # Display each financial statement in a separate tab
-    for i, tab in enumerate(tab_container):
-        with tab:
-            st.write(f"**{tabs[i]}**")
-            st.write(tab_contents[i])
-            st.write(" ")
 
 def calculate_kpis(df):
     kpis = {}
     if 'Total Income' in df.columns and 'Operating Profit' in df.columns and 'Total Expenditure' in df.columns:
         kpis['Total Income'] = df['Total Income'].sum()
         kpis['Operating Profit'] = df['Operating Profit'].sum()
-        if df['Total Income'].sum() != 0:
+        if df['Total Income'].sum()!= 0:
             kpis['Operating Profit Margin'] = (df['Operating Profit'] / df['Total Income']).sum() * 100
         else:
             kpis['Operating Profit Margin'] = 0
@@ -81,6 +47,13 @@ def create_visualizations(df):
         st.pyplot(fig)
     else:
         st.write("Error: The DataFrame must contain 'Category' and 'Amount' columns for visualization.")
+
+def display_financial_statement(df):
+    columns = ['Total Income', 'Operating Profit', 'Reported Net Profit']
+    if all(col in df.columns for col in columns):
+        st.write(df.loc[:, columns])
+    else:
+        st.write("Error: One or more columns are missing from the DataFrame.")
 
 def main():
     st.title("Financial Statement Analyzer")
