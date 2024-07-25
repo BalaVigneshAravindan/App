@@ -41,9 +41,9 @@ def calculate_kpis(df):
             years = df.columns[1:]  # Extract years from column headers
             
             for year in years:
-                total_income = total_income_row[year].astype(float)
-                operating_profit = operating_profit_row[year].astype(float)
-                total_expenditure = total_expenditure_row[year].astype(float)
+                total_income = float(total_income_row[year].values[0])
+                operating_profit = float(operating_profit_row[year].values[0])
+                total_expenditure = float(total_expenditure_row[year].values[0])
                 
                 kpis[year] = {
                     'Total Income': total_income,
@@ -53,14 +53,14 @@ def calculate_kpis(df):
                 
                 if not df[df.iloc[:, 0].str.contains("Employee Cost", na=False)].empty:
                     employee_cost_row = df[df.iloc[:, 0].str.contains("Employee Cost", na=False)]
-                    employee_cost = employee_cost_row[year].astype(float)
+                    employee_cost = float(employee_cost_row[year].values[0])
                     kpis[year]['Employee Cost Percentage'] = (employee_cost / total_expenditure) * 100
                 
                 if not df[df.iloc[:, 0].str.contains("Dividend Per Share(Rs)", na=False)].empty:
                     dps_row = df[df.iloc[:, 0].str.contains("Dividend Per Share(Rs)", na=False)]
                     eps_row = df[df.iloc[:, 0].str.contains("Earnings Per Share-Unit Curr", na=False)]
-                    dps = dps_row[year].astype(float)
-                    eps = eps_row[year].astype(float)
+                    dps = float(dps_row[year].values[0])
+                    eps = float(eps_row[year].values[0])
                     kpis[year]['Dividend Yield'] = (dps / eps) * 100 if eps != 0 else 0
                     kpis[year]['Payout Ratio'] = (dps / eps) * 100 if eps != 0 else 0
         else:
@@ -68,6 +68,8 @@ def calculate_kpis(df):
     
     except KeyError as e:
         st.write(f"Error: Column not found - {str(e)}")
+    except ValueError as e:
+        st.write(f"Error: Value error - {str(e)}")
     
     return kpis
 
@@ -78,6 +80,8 @@ def display_kpis(kpis):
         st.write(f"### {year}")
         for metric, value in metrics.items():
             st.write(f"{metric}: {value}")
+
+
 def create_visualizations(df):
     st.write("Visualizations")
     # Check if the 'Total Income' row exists and is not empty
