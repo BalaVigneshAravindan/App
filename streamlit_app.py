@@ -69,12 +69,16 @@ def calculate_kpis(df):
 # Function to create visualizations
 def create_visualizations(df):
     st.write("Visualizations")
-    # Example visualization
+    # Check if the 'Total Income' row exists and is not empty
     if not df[df.iloc[:, 0].str.contains("Total Income", na=False)].empty:
+        # Extract the 'Total Income' row
         income_row = df[df.iloc[:, 0].str.contains("Total Income", na=False)]
+        # Convert the data to float and set index to year columns
         data = income_row.iloc[0, 1:].astype(float)
         data.index = df.columns[1:]  # Set index to year columns
-        st.line_chart(data)
+        
+        # Plot the bar chart
+        st.bar_chart(data)
 
 def main():
     st.title("Financial Statement Analyzer")
