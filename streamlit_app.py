@@ -102,26 +102,25 @@ def create_visualizations(df):
         # Display the plot in Streamlit
         st.pyplot(fig)
 
-def create_line_chart(df):
-    st.write("Line Chart")
-    fig, ax = plt.subplots()
-    years = df.iloc[:, 0]
-    employee_cost_percentages = [row[1]["Employee Cost Percentage"] for row in df.iterrows()]
-    operating_profits = [row[1]["Operating Profit"] for row in df.iterrows()]
-    operating_profit_margins = [row[1]["Operating Profit Margin"] for row in df.iterrows()]
-    total_incomes = [row[1]["Total Income"] for row in df.iterrows()]
+def create_visualizations(df):
+    st.write("Visualizations")
+    
+    if not df[df.index.str.contains("Total Income", na=False)].empty:
+        income_row = df[df.index.str.contains("Total Income", na=False)]
+        data = income_row.iloc[0, 1:].astype(float)
+        data.index = df.columns[1:]  # Set index to year columns
+        
+        st.bar_chart(data)
+        st.write("Total Income by Year")
+    
+    if not df[df.index.str.contains("Operating Profit", na=False)].empty:
+        profit_row = df[df.index.str.contains("Operating Profit", na=False)]
+        data = profit_row.iloc[0, 1:].astype(float)
+        data.index = df.columns[1:]  # Set index to year columns
+        
+        st.bar_chart(data)
+        st.write("Operating Profit by Year")
 
-    ax.plot(years, employee_cost_percentages, label="Employee Cost Percentage")
-    ax.plot(years, operating_profits, label="Operating Profit")
-    ax.plot(years, operating_profit_margins, label="Operating Profit Margin")
-    ax.plot(years, total_incomes, label="Total Income")
-
-    ax.set_title("KPIs Over Time")
-    ax.set_xlabel("Year")
-    ax.set_ylabel("Value")
-    ax.legend()
-
-    st.pyplot(fig)
     
 def main():
     st.title("Financial Statement Analyzer")
