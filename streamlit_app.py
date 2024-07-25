@@ -79,7 +79,7 @@ def calculate_kpis(df):
 # Displaying KPIs year-wise
 def display_kpis(kpis):
     st.write("Key Performance Indicators (KPIs) Year-wise")
-    kpi_df = pd.DataFrame(kpis)
+    kpi_df = pd.DataFrame(kpis)  # Directly convert list of dictionaries to DataFrame
     st.table(kpi_df)
 
 def create_visualizations(df):
