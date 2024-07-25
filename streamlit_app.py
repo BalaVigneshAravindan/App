@@ -80,6 +80,7 @@ def display_kpis(kpis):
         st.write(f"### {year}")
         for metric, value in metrics.items():
             st.write(f"{metric}: {value}")
+
 def create_visualizations(df):
     st.write("Visualizations")
     
