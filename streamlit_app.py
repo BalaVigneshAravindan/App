@@ -66,19 +66,15 @@ def calculate_kpis(df):
         st.write(f"Error: Column not found - {str(e)}")
     
     return kpis
-    kpis_df = pd.DataFrame(list(kpis.items()), columns=['KPI', 'Value'])
-            st.table(kpis_df)
-            
-            create_visualizations(df)
-
+# Function to create visualizations
 def create_visualizations(df):
     st.write("Visualizations")
-    if 'Category' in df.columns and 'Amount' in df.columns:
-        fig, ax = plt.subplots()
-        sns.barplot(x='Category', y='Amount', data=df)
-        st.pyplot(fig)
-    else:
-        st.write("Error: The DataFrame must contain 'Category' and 'Amount' columns for visualization.")
+    # Example visualization
+    if not df[df.iloc[:, 0].str.contains("Total Income", na=False)].empty:
+        income_row = df[df.iloc[:, 0].str.contains("Total Income", na=False)]
+        data = income_row.iloc[0, 1:].astype(float)
+        data.index = df.columns[1:]  # Set index to year columns
+        st.line_chart(data)
 
 def main():
     st.title("Financial Statement Analyzer")
@@ -89,10 +85,12 @@ def main():
             display_financial_statement(df)
             kpis = calculate_kpis(df)
             st.write("Key Performance Indicators (KPIs)")
-            st.write(kpis)
+            
+            # Convert KPIs to a DataFrame for display
+            kpis_df = pd.DataFrame(list(kpis.items()), columns=['KPI', 'Value'])
+            st.table(kpis_df)
+            
             create_visualizations(df)
-        else:
-            st.write("Error: Could not read the file. Please ensure it is in the correct format.")
 
 if __name__ == "__main__":
     main()
