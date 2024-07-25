@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import seaborn as sns
+import matplotlib.pyplot as plt
 from pdfplumber import open as open_pdf
 from openpyxl import load_workbook
 
