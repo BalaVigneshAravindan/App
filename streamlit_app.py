@@ -49,11 +49,9 @@ def create_visualizations(df):
         st.write("Error: The DataFrame must contain 'Category' and 'Amount' columns for visualization.")
 
 def display_financial_statement(df):
-    columns = ['Total Income', 'Operating Profit', 'Reported Net Profit']
-    if all(col in df.columns for col in columns):
-        st.write(df.loc[:, columns])
-    else:
-        st.write("Error: One or more columns are missing from the DataFrame.")
+    df_pivoted = df.pivot(index=None, columns=df.index, values='Values')
+    st.write("Financial Statement")
+    st.write(df_pivoted)
 
 def main():
     st.title("Financial Statement Analyzer")
