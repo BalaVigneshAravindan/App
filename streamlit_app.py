@@ -32,33 +32,37 @@ def calculate_kpis(df):
     kpis = {}
     
     try:
-       
+        # Extracting relevant rows based on known labels
         total_income_row = df[df.iloc[:, 0].str.contains("Total Income", na=False)]
         operating_profit_row = df[df.iloc[:, 0].str.contains("Operating Profit", na=False)]
         total_expenditure_row = df[df.iloc[:, 0].str.contains("Total Expenditure", na=False)]
         
         if not total_income_row.empty and not operating_profit_row.empty and not total_expenditure_row.empty:
-          
-            total_income = total_income_row.iloc[0, 1:].astype(float).sum()
-            operating_profit = operating_profit_row.iloc[0, 1:].astype(float).sum()
-            total_expenditure = total_expenditure_row.iloc[0, 1:].astype(float).sum()
+            years = df.columns[1:]  # Extract years from column headers
             
-            kpis['Total Income'] = total_income
-            kpis['Operating Profit'] = operating_profit
-            kpis['Operating Profit Margin'] = (operating_profit / total_income) * 100 if total_income != 0 else 0
-            
-            if not df[df.iloc[:, 0].str.contains("Employee Cost", na=False)].empty:
-                employee_cost_row = df[df.iloc[:, 0].str.contains("Employee Cost", na=False)]
-                employee_cost = employee_cost_row.iloc[0, 1:].astype(float).sum()
-                kpis['Employee Cost Percentage'] = (employee_cost / total_expenditure) * 100
-            
-            if not df[df.iloc[:, 0].str.contains("Dividend Per Share(Rs)", na=False)].empty:
-                dps_row = df[df.iloc[:, 0].str.contains("Dividend Per Share(Rs)", na=False)]
-                eps_row = df[df.iloc[:, 0].str.contains("Earnings Per Share-Unit Curr", na=False)]
-                dps = dps_row.iloc[0, 1:].astype(float).sum()
-                eps = eps_row.iloc[0, 1:].astype(float).sum()
-                kpis['Dividend Yield'] = (dps / eps) * 100 if eps != 0 else 0
-                kpis['Payout Ratio'] = (dps / eps) * 100 if eps != 0 else 0
+            for year in years:
+                total_income = total_income_row[year].astype(float)
+                operating_profit = operating_profit_row[year].astype(float)
+                total_expenditure = total_expenditure_row[year].astype(float)
+                
+                kpis[year] = {
+                    'Total Income': total_income,
+                    'Operating Profit': operating_profit,
+                    'Operating Profit Margin': (operating_profit / total_income) * 100 if total_income != 0 else 0
+                }
+                
+                if not df[df.iloc[:, 0].str.contains("Employee Cost", na=False)].empty:
+                    employee_cost_row = df[df.iloc[:, 0].str.contains("Employee Cost", na=False)]
+                    employee_cost = employee_cost_row[year].astype(float)
+                    kpis[year]['Employee Cost Percentage'] = (employee_cost / total_expenditure) * 100
+                
+                if not df[df.iloc[:, 0].str.contains("Dividend Per Share(Rs)", na=False)].empty:
+                    dps_row = df[df.iloc[:, 0].str.contains("Dividend Per Share(Rs)", na=False)]
+                    eps_row = df[df.iloc[:, 0].str.contains("Earnings Per Share-Unit Curr", na=False)]
+                    dps = dps_row[year].astype(float)
+                    eps = eps_row[year].astype(float)
+                    kpis[year]['Dividend Yield'] = (dps / eps) * 100 if eps != 0 else 0
+                    kpis[year]['Payout Ratio'] = (dps / eps) * 100 if eps != 0 else 0
         else:
             st.write("Error: Required rows not found in the data.")
     
@@ -67,6 +71,13 @@ def calculate_kpis(df):
     
     return kpis
 
+# Displaying KPIs year-wise
+def display_kpis(kpis):
+    st.write("Key Performance Indicators (KPIs) Year-wise")
+    for year, metrics in kpis.items():
+        st.write(f"### {year}")
+        for metric, value in metrics.items():
+            st.write(f"{metric}: {value}")
 def create_visualizations(df):
     st.write("Visualizations")
     # Check if the 'Total Income' row exists and is not empty
