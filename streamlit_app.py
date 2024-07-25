@@ -21,6 +21,12 @@ def read_file(file):
     else:
         return None
 
+def display_financial_statement(df):
+    df.reset_index(inplace=True)  # Set the index
+    df_pivoted = df.pivot(index='index', columns='index', values='Values')
+    st.write("Financial Statement")
+    st.write(df_pivoted)
+    
 def calculate_kpis(df):
     kpis = {}
     if 'Total Income' in df.columns and 'Operating Profit' in df.columns and 'Total Expenditure' in df.columns:
