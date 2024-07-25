@@ -40,15 +40,20 @@ def exploratory_data_analysis(df):
 
 def calculate_kpis(df):
     kpis = {}
-    if 'Revenue' in df.columns and 'Net Income' in df.columns and 'Cost of Goods Sold' in df.columns:
-        kpis['Revenue'] = df['Revenue'].sum()
-        kpis['Net Income'] = df['Net Income'].sum()
-        if df['Revenue'].sum() != 0:
-            kpis['Gross Margin'] = (df['Revenue'] - df['Cost of Goods Sold']).sum() / df['Revenue'].sum()
+    if 'Total Income' in df.columns and 'Operating Profit' in df.columns and 'Total Expenditure' in df.columns:
+        kpis['Total Income'] = df['Total Income'].sum()
+        kpis['Operating Profit'] = df['Operating Profit'].sum()
+        if df['Total Income'].sum() != 0:
+            kpis['Operating Profit Margin'] = (df['Operating Profit'] / df['Total Income']).sum() * 100
         else:
-            kpis['Gross Margin'] = 0
+            kpis['Operating Profit Margin'] = 0
+        if 'Employee Cost' in df.columns:
+            kpis['Employee Cost Percentage'] = (df['Employee Cost'] / df['Total Expenditure']).sum() * 100
+        if 'Dividend Per Share(Rs)' in df.columns and 'Earnings Per Share-Unit Curr' in df.columns:
+            kpis['Dividend Yield'] = (df['Dividend Per Share(Rs)'] / df['Earnings Per Share-Unit Curr']).sum() * 100
+            kpis['Payout Ratio'] = (df['Dividend Per Share(Rs)'] / df['Earnings Per Share-Unit Curr']).sum() * 100
     else:
-        st.write("Error: The DataFrame must contain 'Revenue', 'Net Income', and 'Cost of Goods Sold' columns for KPI calculation.")
+        st.write("Error: The DataFrame must contain 'Total Income', 'Operating Profit', and 'Total Expenditure' columns for KPI calculation.")
     return kpis
 
 def create_visualizations(df):
