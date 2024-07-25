@@ -2,22 +2,25 @@ import streamlit as st
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from pdfplumber import open as open_pdf
+import pdfplumber
 from openpyxl import load_workbook
 
 def read_file(file):
     if file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
         # Read Excel file
-        wb = load_workbook(file)
-        sheet = wb.active
-        df = pd.DataFrame(sheet.values)
+        df = pd.read_excel(file)
         return df
     elif file.type == "application/pdf":
         # Read PDF file
-        with open_pdf(file) as pdf:
-            page = pdf.pages[0]
-            text = page.extract_text()
-            return text
+        text = ''
+        with pdfplumber.open(file) as pdf:
+            for page in pdf.pages:
+                text += page.extract_text()
+        return pd.DataFrame([text.splitlines()], columns=["Content"])  # Sample processing
+    elif file.type == "text/csv":
+        # Read CSV file
+        df = pd.read_csv(file)
+        return df
     else:
         return None
 
@@ -30,7 +33,7 @@ def calculate_kpis(df):
     if 'Total Income' in df.columns and 'Operating Profit' in df.columns and 'Total Expenditure' in df.columns:
         kpis['Total Income'] = df['Total Income'].sum()
         kpis['Operating Profit'] = df['Operating Profit'].sum()
-        if df['Total Income'].sum()!= 0:
+        if df['Total Income'].sum() != 0:
             kpis['Operating Profit Margin'] = (df['Operating Profit'] / df['Total Income']).sum() * 100
         else:
             kpis['Operating Profit Margin'] = 0
@@ -52,11 +55,6 @@ def create_visualizations(df):
     else:
         st.write("Error: The DataFrame must contain 'Category' and 'Amount' columns for visualization.")
 
-def display_financial_statement(df):
-    df_pivoted = df.pivot(index=None, columns=df.index, values='Values')
-    st.write("Financial Statement")
-    st.write(df_pivoted)
-
 def main():
     st.title("Financial Statement Analyzer")
     file = st.file_uploader("Choose a file", type=["csv", "xlsx", "xls", "pdf"])
@@ -68,6 +66,8 @@ def main():
             st.write("Key Performance Indicators (KPIs)")
             st.write(kpis)
             create_visualizations(df)
+        else:
+            st.write("Error: Could not read the file. Please ensure it is in the correct format.")
 
 if __name__ == "__main__":
     main()
