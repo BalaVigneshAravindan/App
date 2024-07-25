@@ -21,11 +21,9 @@ def read_file(file):
                 df = pd.DataFrame([x.split() for x in text.split('\n')])
                 return df
         else:
-        def read_file(file):
-    try:
-        # Read CSV file
-        df = pd.read_csv(file, error_bad_lines=False)
-        return df
+            # Read CSV file
+            df = pd.read_csv(file, error_bad_lines=False)
+            return df
     except Exception as e:
         st.error(f"Error reading file: {e}")
         return None
@@ -45,6 +43,8 @@ def calculate_kpis(df):
             kpis['Gross Margin'] = (df['Revenue'] - df['Cost of Goods Sold']).sum() / df['Revenue'].sum()
         else:
             kpis['Gross Margin'] = 0
+    else:
+        st.write("Error: The DataFrame must contain 'Revenue', 'Net Income', and 'Cost of Goods Sold' columns for KPI calculation.")
     return kpis
 
 def create_visualizations(df):
