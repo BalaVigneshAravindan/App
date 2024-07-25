@@ -81,40 +81,51 @@ def display_kpis(kpis):
         for metric, value in metrics.items():
             st.write(f"{metric}: {value}")
 
+def calculate_percentage_growth(data):
+    growth = data.pct_change() * 100
+    return growth
+
 def create_visualizations(df):
     st.write("Visualizations")
     
-    # Check if 'Total Income' is in the DataFrame index
+    # Total Income Visualization
     if not df[df.iloc[:, 0].str.contains("Total Income", na=False)].empty:
         income_row = df[df.iloc[:, 0].str.contains("Total Income", na=False)]
         data = income_row.iloc[0, 1:].astype(float)
         data.index = df.columns[1:]  # Set index to year columns
         
-        # Create the bar chart using matplotlib
+        # Calculate percentage growth
+        growth = calculate_percentage_growth(data)
+        
+        # Create the growth plot using matplotlib
         fig, ax = plt.subplots()
-        data.plot(kind='bar', ax=ax)
-        ax.set_title("Total Income Over Years")
+        growth.plot(kind='bar', ax=ax, color='green')
+        ax.set_title("Percentage Growth of Total Income Over Years")
         ax.set_xlabel("Years")
-        ax.set_ylabel("Total Income (in currency units)")
+        ax.set_ylabel("Percentage Growth (%)")
         plt.xticks(rotation=45)  # Rotate x-axis labels if needed
         
         st.pyplot(fig)
     
-    # Check if 'Operating Profit' is in the DataFrame index
+    # Operating Profit Visualization
     if not df[df.iloc[:, 0].str.contains("Operating Profit", na=False)].empty:
         profit_row = df[df.iloc[:, 0].str.contains("Operating Profit", na=False)]
         data = profit_row.iloc[0, 1:].astype(float)
         data.index = df.columns[1:]  # Set index to year columns
         
-        # Create the bar chart using matplotlib
+        # Calculate percentage growth
+        growth = calculate_percentage_growth(data)
+        
+        # Create the growth plot using matplotlib
         fig, ax = plt.subplots()
-        data.plot(kind='bar', ax=ax, color='orange')
-        ax.set_title("Operating Profit Over Years")
+        growth.plot(kind='bar', ax=ax, color='orange')
+        ax.set_title("Percentage Growth of Operating Profit Over Years")
         ax.set_xlabel("Years")
-        ax.set_ylabel("Operating Profit (in currency units)")
+        ax.set_ylabel("Percentage Growth (%)")
         plt.xticks(rotation=45)  # Rotate x-axis labels if needed
         
         st.pyplot(fig)
+
     
 def main():
     st.title("Financial Statement Analyzer")
