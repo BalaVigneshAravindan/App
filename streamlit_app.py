@@ -115,19 +115,34 @@ def create_visualizations(df):
         
         st.pyplot(fig)
     
+def evaluate_company_performance(kpis_df):
+    kpis_df = kpis_df.set_index('Year')  # Set 'Year' column as index
+    total_income_growth_rate = (kpis_df.iloc[-1]['Total Income'] - kpis_df.iloc[0]['Total Income']) / kpis_df.iloc[0]['Total Income']
+    operating_profit_margin_avg = kpis_df['Operating Profit Margin'].mean()
+    employee_cost_percentage_avg = kpis_df['Employee Cost Percentage'].mean()
+
+    if total_income_growth_rate > 0.1 and operating_profit_margin_avg > 25 and employee_cost_percentage_avg < 70:
+        return "The company is in a good position."
+    else:
+        return "The company needs to improve its performance."
+
 def main():
-    st.title("Financial Statement Analyzer")
-    file = st.file_uploader("Choose a file", type=["csv", "xlsx", "xls", "pdf"])
+    st.title("Financial Analysis App")
+    
+    file = st.file_uploader("Upload your CSV file", type=["csv"])
+    
     if file is not None:
         df = read_file(file)
         if df is not None:
-            display_financial_statement(df)
             kpis = calculate_kpis(df)
+            kpis_df = pd.DataFrame([kpis], index=[df.columns[0]])  # Create DataFrame for KPIs
             st.write("Key Performance Indicators (KPIs)")
+            st.write(kpis_df)
             
-            # Convert KPIs to a DataFrame for display
-            kpis_df = pd.DataFrame(list(kpis.items()), columns=['KPI', 'Value'])
-            st.table(kpis_df)
+            # Calculate and display overall performance
+            result = evaluate_company_performance(kpis_df)
+            st.write("Company Performance Evaluation:")
+            st.write(result)
             
             create_visualizations(df)
 
