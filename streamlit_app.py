@@ -141,6 +141,28 @@ def evaluate_company_performance(kpis_df):
         return "The company is in a good position."
     else:
         return "The company needs to improve its performance."
+def display_performance_result(result):
+    if result == "The company is in a good position.":
+        st.markdown(
+            """
+            <div style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 5px; border: 1px solid #c3e6cb;">
+                <span style="font-size: 24px; color: #28a745;">✔</span>
+                <strong>{}</strong>
+            </div>
+            """.format(result),
+            unsafe_allow_html=True
+        )
+    else:
+        st.markdown(
+            """
+            <div style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; border: 1px solid #f5c6cb;">
+                <span style="font-size: 24px; color: #dc3545;">✘</span>
+                <strong>{}</strong>
+            </div>
+            """.format(result),
+            unsafe_allow_html=True
+        )
+
 
 def main():
     st.title("Financial Analysis App")
