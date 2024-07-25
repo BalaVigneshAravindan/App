@@ -127,13 +127,25 @@ def evaluate_company_performance(kpis_df):
     else:
         return "The company needs to improve its performance."
 
+def evaluate_company_performance(kpis_df):
+    kpis_df = kpis_df.set_index('Year')  # Set 'Year' column as index
+    total_income_growth_rate = (kpis_df.iloc[-1]['Total Income'] - kpis_df.iloc[0]['Total Income']) / kpis_df.iloc[0]['Total Income']
+    operating_profit_margin_avg = kpis_df['Operating Profit Margin'].mean()
+    employee_cost_percentage_avg = kpis_df['Employee Cost Percentage'].mean()
+
+    if total_income_growth_rate > 0.1 and operating_profit_margin_avg > 25 and employee_cost_percentage_avg < 70:
+        return "The company is in a good position."
+    else:
+        return "The company needs to improve its performance."
+
 def main():
     st.title("Financial Analysis App")
     
-    file = st.file_uploader("Upload your CSV file", type=["csv"])
+    file = st.file_uploader("Upload your file", type=["csv", "xlsx", "pdf"])
     
     if file is not None:
-        df = read_file(file)
+        file_type = file.type.split('/')[-1]
+        df = read_file(file, file_type)
         if df is not None:
             kpis = calculate_kpis(df)
             kpis_df = pd.DataFrame([kpis], index=[df.columns[0]])  # Create DataFrame for KPIs
