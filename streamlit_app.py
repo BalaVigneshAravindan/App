@@ -35,17 +35,25 @@ def read_file(file):
 def display_financial_statement(df):
     st.write("Financial Statement")
     st.write("******************")
-    st.write("**Income Statement**")
-    st.write(df.loc[:, ['Total Income', 'Operating Profit', 'Reported Net Profit']])
-    st.write(" ")
-    st.write("**Expenditure Statement**")
-    st.write(df.loc[:, ['Total Expenditure', 'Employee Cost', 'Depreciation']])
-    st.write(" ")
-    st.write("**Balance Sheet**")
-    st.write(df.loc[:, ['Total Assets', 'Total Liabilities', 'Total Equity']])
-    st.write(" ")
-    st.write("**Cash Flow Statement**")
-    st.write(df.loc[:, ['Net Cash from Operations', 'Net Cash from Investing', 'Net Cash from Financing']])
+
+    # Create tabs for each financial statement
+    tabs = ["Income Statement", "Expenditure Statement", "Balance Sheet", "Cash Flow Statement"]
+    tab_contents = [
+        df.loc[:, ['Total Income', 'Operating Profit', 'Reported Net Profit']],
+        df.loc[:, ['Total Expenditure', 'Employee Cost', 'Depreciation']],
+        df.loc[:, ['Total Assets', 'Total Liabilities', 'Total Equity']],
+        df.loc[:, ['Net Cash from Operations', 'Net Cash from Investing', 'Net Cash from Financing']]
+    ]
+
+    # Create a tab container
+    tab_container = st.tabs(tabs)
+
+    # Display each financial statement in a separate tab
+    for i, tab in enumerate(tab_container):
+        with tab:
+            st.write(f"**{tabs[i]}**")
+            st.write(tab_contents[i])
+            st.write(" ")
 
 
 def calculate_kpis(df):
