@@ -66,7 +66,7 @@ def calculate_kpis(df):
         st.write(f"Error: Column not found - {str(e)}")
     
     return kpis
-# Function to create visualizations
+
 def create_visualizations(df):
     st.write("Visualizations")
     # Check if the 'Total Income' row exists and is not empty
@@ -76,9 +76,17 @@ def create_visualizations(df):
         # Convert the data to float and set index to year columns
         data = income_row.iloc[0, 1:].astype(float)
         data.index = df.columns[1:]  # Set index to year columns
-        
-        # Plot the bar chart
-        st.bar_chart(data)
+
+        # Create the bar chart using matplotlib
+        fig, ax = plt.subplots()
+        data.plot(kind='bar', ax=ax)
+        ax.set_title("Total Income Over Years")
+        ax.set_xlabel("Years")
+        ax.set_ylabel("Total Income (in currency units)")
+        plt.xticks(rotation=45)  # Rotate x-axis labels if needed
+
+        # Display the plot in Streamlit
+        st.pyplot(fig)
 
 def main():
     st.title("Financial Statement Analyzer")
