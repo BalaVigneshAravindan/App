@@ -66,6 +66,10 @@ def calculate_kpis(df):
         st.write(f"Error: Column not found - {str(e)}")
     
     return kpis
+    kpis_df = pd.DataFrame(list(kpis.items()), columns=['KPI', 'Value'])
+            st.table(kpis_df)
+            
+            create_visualizations(df)
 
 def create_visualizations(df):
     st.write("Visualizations")
