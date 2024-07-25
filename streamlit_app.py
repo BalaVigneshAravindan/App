@@ -131,16 +131,6 @@ def evaluate_company_performance(kpis_df):
     else:
         return "The company needs to improve its performance."
 
-def evaluate_company_performance(kpis_df):
-    kpis_df = kpis_df.set_index('Year')  # Set 'Year' column as index
-    total_income_growth_rate = (kpis_df.iloc[-1]['Total Income'] - kpis_df.iloc[0]['Total Income']) / kpis_df.iloc[0]['Total Income']
-    operating_profit_margin_avg = kpis_df['Operating Profit Margin'].mean()
-    employee_cost_percentage_avg = kpis_df['Employee Cost Percentage'].mean()
-
-    if total_income_growth_rate > 0.1 and operating_profit_margin_avg > 25 and employee_cost_percentage_avg < 70:
-        return "The company is in a good position."
-    else:
-        return "The company needs to improve its performance."
 def display_performance_result(result):
     if result == "The company is in a good position.":
         st.markdown(
