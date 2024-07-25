@@ -21,9 +21,11 @@ def read_file(file):
                 df = pd.DataFrame([x.split() for x in text.split('\n')])
                 return df
         else:
-            # Read CSV file
-            df = pd.read_csv(file)
-            return df
+        def read_file(file):
+    try:
+        # Read CSV file
+        df = pd.read_csv(file, error_bad_lines=False)
+        return df
     except Exception as e:
         st.error(f"Error reading file: {e}")
         return None
